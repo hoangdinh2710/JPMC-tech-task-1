@@ -1,0 +1,225 @@
+From 78b75af39f3d42ed2f447f3c5098ce6e29536c5f Mon Sep 17 00:00:00 2001
+From: Harry Dinh <hoangdinh.2710@gmail.com>
+Date: Sun, 20 Oct 2019 20:52:54 -0500
+Subject: [PATCH] 'test'
+
+---
+ .Rhistory                                     |   0
+ .ipynb_checkpoints/README-checkpoint.markdown |  68 ++++++++++++++++++
+ client.py                                     |  18 ++++-
+ client.pyc                                    | Bin 0 -> 1465 bytes
+ client_test.py                                |  47 +++++++-----
+ 5 files changed, 113 insertions(+), 20 deletions(-)
+ create mode 100644 .Rhistory
+ create mode 100644 .ipynb_checkpoints/README-checkpoint.markdown
+ create mode 100644 client.pyc
+
+diff --git a/.Rhistory b/.Rhistory
+new file mode 100644
+index 0000000..e69de29
+diff --git a/.ipynb_checkpoints/README-checkpoint.markdown b/.ipynb_checkpoints/README-checkpoint.markdown
+new file mode 100644
+index 0000000..7e334c9
+--- /dev/null
++++ b/.ipynb_checkpoints/README-checkpoint.markdown
+@@ -0,0 +1,68 @@
++<br>
++<p align="center">
++<a href="https://www.insidesherpa.com/virtual-internships/prototype/R5iK7HMxJGBgaSbvk/Technology%20Virtual%20Experience" target="_blank">
++<img src="https://insidesherpa-assets.s3-ap-southeast-2.amazonaws.com/icons/jpmorgan/github+repo+images/jpm+gitub+.png"></a>
++</p>
++
++<p align="center"> 
++	<b><a href="#task">Task Overview</a></b>
++	|
++	<b><a href="#installation">Installation Instructions</a></b>
++	| 
++	<b><a href="https://www.insidesherpa.com/modules/R5iK7HMxJGBgaSbvk/gtAhtcvke9AFCzqME" target="_blank">Link to Module 1</a></b>		
++	| 
++	<b><a href="https://www.insidesherpa.com/virtual-internships/prototype/R5iK7HMxJGBgaSbvk/Technology%20Virtual%20Experience">JP Morgan Chase & Co Software Engineering Virtual Experience</a></b>
++</p>
++
++<h1> Introduction</h1> 
++<b> Experience Technology at JP Morgan Chase & Co</b>
++<p>Try out what real work is like in the technology team at JP Morgan Chase & Co. Fast track to the tech team with your work.</p>
++
++<h2 id="task"> Module 1 Task Overview </h2>
++<p>Interface with a stock price data feed and set up your system for analysis of the data</p>
++<p> <b>Aim:</b> We want to process the data feed of stock A and stock B’s price to enable us to analyse when trading for the stock should occur.</p>
++
++<ol>
++	<li>Please clone this repository to start the task</li>
++	<li>Adjust the getRatio and getDataPoint functions</li>
++	<li>Pass all unit tests and add more to cover edge cases</li>
++	<li>Upload a git patch file as the submission to this task</li>
++	
++</ol>
++
++<h2 id="installation" >Installation</h2>
++
++Please ensure you are using <b> python2.7. </b>
++
++Start the data feed server by running:
++
++<code> python datafeed/server.py</code>
++
++Run <code>npm install</code> to start the application.
++
++To run the app in development mode, run <code>npm start</code> in the project directory.
++
++Open http://localhost:3000 to view the app in the browser. The page will reload if you make edits.
++
++<h2>Run</h2>
++To start the server, run
++
++	python server.py
++
++this will create random market called 'test.csv' in your working directory if one does not already exist.
++
++To start the example client, run:
++
++	python client.py
++
++To unit test the example client, run:
++	python client_test.py
++
++<h2>API Examples</h2>
++
++See also [client.py](https://github.com/texodus/exchange_simulator/blob/master/client.py)
++
++Query:
++
++	$ curl 'http://localhost:8080/query?id=1'
++	{"id": "1", "top_ask": {"price": 129.18, "size": 70}, "timestamp": "2016-08-06 12:32:11.821574", "top_bid": {"price": 128.79, "size": 61}}
+diff --git a/client.py b/client.py
+index 40badcd..4653a1e 100644
+--- a/client.py
++++ b/client.py
+@@ -35,14 +35,23 @@ def getDataPoint(quote):
+ 	stock = quote['stock']
+ 	bid_price = float(quote['top_bid']['price'])
+ 	ask_price = float(quote['top_ask']['price'])
+-	price = bid_price
++	if bid_price >= ask_price:
++		price = ask_price
++	else:
++		price = bid_price
+ 	return stock, bid_price, ask_price, price
+ 
+ def getRatio(price_a, price_b):
+ 	""" Get ratio of price_a and price_b """
+ 	""" ------------- Update this function ------------- """
++	if price_b != 0:
++		ratio_ab = price_a/price_b
++	else:
++		ratio_ab = 0
++	
+ 	""" Also create some unit tests for this function in client_test.py """
+-	return 1
++	
++	return ratio_ab
+ 
+ # Main
+ if __name__ == "__main__":
+@@ -52,8 +61,11 @@ if __name__ == "__main__":
+ 		quotes = json.loads(urllib2.urlopen(QUERY.format(random.random())).read())
+ 
+ 		""" ----------- Update to get the ratio --------------- """
++		price_list = []
++
+ 		for quote in quotes:
+ 			stock, bid_price, ask_price, price = getDataPoint(quote)
++			price_list.append(price)
+ 			print "Quoted %s at (bid:%s, ask:%s, price:%s)" % (stock, bid_price, ask_price, price)
+ 
+-		print "Ratio %s" % getRatio(price, price)
++		print "Ratio %s" % getRatio(price_list[0], price_list[1])
+diff --git a/client.pyc b/client.pyc
+new file mode 100644
+index 0000000000000000000000000000000000000000..8c6fed713f86655257f309afc56c799d0077b164
+GIT binary patch
+literal 1465
+zcmcIjO>f&q5FLJqu@otBVmqyF+ZI6-Ag<G#0wHY!*oBP(O&uCR5JCpA;*KRs6e)98
+zfrH8?=Xd1VQ`;Zc-rKh;Iq45*N$%{MnVs34x5MDiPV4v1Z>JfppBtE;W9UtfNa6FS
+zAWA-Bj}q_N?o;Al<A9QY6f7Yr;0CFX-Xky~)o|bj@dl}graske@8S>QCUJwVJUTf2
+zKuL?(r^!uXqDh-Lq)CT3ph-YiWEbI^+*;%0HjR*alP->kZzKLWC3lD;;yZTTAf)6j
+zC0mqiQ?f(6Nt1iTJJ#hX9OEwW7V)+<orQGo@aX(kdaX8y;oBtDq^_M>)V=bZcSNsC
+zN5o0*CYZ_p#`8jd0XQ~h-rw6Rs!SH+N}K-E$4?*coiDh4_kFIu{pB+M3oK?B)W8Ta
+z_A&G+#L}hgUV3C!iceiI*TpF>{cBtJ$rjMkr)5CX2GxfaT!vIe)(Eil*4|}kYdY!K
+z?Q|bP9M_dvWGrM+i0Vw3F^iH}u@Y}(v0yDsB}QCwEe#e4C5@a{d1-`kIZTyJjcp23
+z&C_A7oONF38Gp1&J?+^No$IWqq;cCj^?Xqoj^QNJgg}CH6>K#GuC&;P*27o{ZAsei
+z4_;}m^<Z4day0n4<byhY%Y%a|Tg<pLdT^MVqs4IW<MB`XyN0vzu0g`xZw6VB!~gaC
+zooOS_h|K|NI(9Wd*S8=jXnEUs+g{U;yv%MNVA$DR&{qK96wN;ksP5X!g1Uo?0p+j)
+zfcTT14bWdgh(k646y}vB*_D_|AxpK!Ly=?Ex<<Q|V{g6gUwCLX;B<*nIs6|evFSlc
+zY>)Z~SX%=HZLi};q1!x7XEHC-R6l^@rM*8T?rR~9=;8YM_w^$Ip55%u5A@JwaXGQn
+zRhrw5=zRv^s$0}Wkq@63`wN(S#tuw$RhkHv8bnny*Dx<%{Sdz~Huyzsj~3fIT%W6y
+zGfq<%ae)w&Vb`TD4sECO^;Xp!4PX<WRrO37w^_|nIh$)qZCY@z_%Cv8V%zMlPh%Sw
+z+m3f#=|bcj3Du|DaOgklQd{P;8UE6OzuN)U0-}xH#2Z9G<Tu;RPCMB0c7Z$I=U&I_
+G`u_m(AV6gR
+
+literal 0
+HcmV?d00001
+
+diff --git a/client_test.py b/client_test.py
+index a608a01..6582fbd 100644
+--- a/client_test.py
++++ b/client_test.py
+@@ -1,25 +1,38 @@
+ import unittest
+ from client import getDataPoint
++from client import getRatio
+ 
+ class ClientTest(unittest.TestCase):
+-  def test_getDataPoint_calculatePrice(self):
+-    quotes = [
+-      {'top_ask': {'price': 121.2, 'size': 36}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 120.48, 'size': 109}, 'id': '0.109974697771', 'stock': 'ABC'},
+-      {'top_ask': {'price': 121.68, 'size': 4}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 117.87, 'size': 81}, 'id': '0.109974697771', 'stock': 'DEF'}
+-    ]
+-    """ ------------ Add the assertion below ------------ """
+-
+-  def test_getDataPoint_calculatePriceBidGreaterThanAsk(self):
+-    quotes = [
+-      {'top_ask': {'price': 119.2, 'size': 36}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 120.48, 'size': 109}, 'id': '0.109974697771', 'stock': 'ABC'},
+-      {'top_ask': {'price': 121.68, 'size': 4}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 117.87, 'size': 81}, 'id': '0.109974697771', 'stock': 'DEF'}
+-    ]
+-    """ ------------ Add the assertion below ------------ """
+-
+-
+-  """ ------------ Add more unit tests ------------ """
+-
+ 
++	def test_getDataPoint_calculatePrice(self):
++		quotes = [
++		{'top_ask': {'price': 121.2, 'size': 36}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 120.48, 'size': 109}, 'id': '0.109974697771', 'stock': 'ABC'},
++		{'top_ask': {'price': 121.68, 'size': 4}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 117.87, 'size': 81}, 'id': '0.109974697771', 'stock': 'DEF'}
++	]
++	# ------------ Add the assertion below ------------ 
++		self.assertEqual(getDataPoint(quotes[0])[-1],120.48)
++		self.assertEqual(getDataPoint(quotes[1])[-1],117.87)
++		
++	def test_getDataPoint_calculatePriceBidGreaterThanAsk(self):
++		quotes = [
++		{'top_ask': {'price': 119.2, 'size': 36}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 120.48, 'size': 109}, 'id': '0.109974697771', 'stock': 'ABC'},
++		{'top_ask': {'price': 121.68, 'size': 4}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 117.87, 'size': 81}, 'id': '0.109974697771', 'stock': 'DEF'}
++		]
++	# ------------ Add the assertion below ------------ 
++		self.assertEqual(getDataPoint(quotes[0])[-1],119.2)
++		self.assertEqual(getDataPoint(quotes[1])[-1],117.87)
++	
++	# ------------ Add more unit tests ------------ 
++	
++	def test_div_zero_values(self):
++		quotes = [
++		{'top_ask': {'price': 10.5, 'size': 36}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 10.4, 'size': 109}, 'id': '0.109974697771', 'stock': 'ABC'},
++		{'top_ask': {'price': 0, 'size': 4}, 'timestamp': '2019-02-11 22:06:30.572453', 'top_bid': {'price': 0, 'size': 81}, 'id': '0.109974697771', 'stock': 'DEF'}
++		]
++	# ------------ Add the assertion below ------------  
++		self.assertEqual(getRatio(getDataPoint(quotes[0])[-1],getDataPoint(quotes[1])[-1]),0)
++	
+ 
++  
+ if __name__ == '__main__':
+     unittest.main()
+-- 
+2.23.0.windows.1
+
